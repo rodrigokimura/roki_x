@@ -15,16 +15,26 @@ I2C_DEVICE_ID = 0x08
 
 class RokiX:
     def __init__(self) -> None:
-        self.pixels = neopixel.NeoPixel(board.GP23, 1)  # type: ignore
-        self.pixels.brightness = 0.5
+        self._pixels = neopixel.NeoPixel(board.GP23, 1)  # type: ignore
+        self._pixels.brightness = 0.5
 
         self.i2c_scl_pin = board.GP1  # type: ignore
         self.i2c_sda_pin = board.GP0  # type: ignore
         self.buffer = bytearray(3)
 
+        self.neopixel = parse_color("#ffff00")
+
     @property
     def primary(self):
         return supervisor.runtime.usb_connected
+
+    @property
+    def neopixel(self):
+        return self._pixels[0]
+
+    @neopixel.setter
+    def neopixel(self, value):
+        self._pixels[0] = value
 
     def get_device(self):
         with busio.I2C(scl=self.i2c_scl_pin, sda=self.i2c_sda_pin) as i2c:
@@ -32,30 +42,23 @@ class RokiX:
                 yield device
 
     def run(self):
-        self.pixels[0] = parse_color("#ffffff")
         if self.primary:
-            for i in range(10):
-                try:
-                    with busio.I2C(scl=self.i2c_scl_pin, sda=self.i2c_sda_pin) as i2c:
-                        with I2CDevice(i2c, I2C_DEVICE_ID, False) as device:
-                            self.pixels[0] = parse_color("#ffff00")
-                            time.sleep(1)
-                            while True:
-                                device.readinto(self.buffer)
-                                if self.buffer:
-                                    self.pixels[0] = parse_color("#00ff00")
-                                else:
-                                    self.pixels[0] = parse_color("#ff0000")
-                                print(self.buffer)
-                except Exception as e:
-                    print(e)
+            with busio.I2C(scl=self.i2c_scl_pin, sda=self.i2c_sda_pin) as i2c:
+                with I2CDevice(i2c, I2C_DEVICE_ID, False) as device:
+                    self.neopixel = parse_color("#00ffff")
                     time.sleep(1)
-                    self.pixels[0] = parse_color("#ff0000")
+                    while True:
+                        device.readinto(self.buffer)
+                        if self.buffer:
+                            self.neopixel = parse_color("#0000ff")
+                        else:
+                            self.neopixel = parse_color("#ff0000")
+                        print(self.buffer)
         else:
             with I2CTarget(
                 self.i2c_scl_pin, self.i2c_sda_pin, (I2C_DEVICE_ID,)
             ) as device:
-                self.pixels[0] = parse_color("#00ffff")
+                self.neopixel = parse_color("#00ffff")
                 time.sleep(1)
                 while True:
                     r = device.request()
@@ -68,7 +71,7 @@ class RokiX:
                             elif r.is_restart:
                                 r.write(bytes([1, 2, 3]))
                             else:
-                                self.pixels[0] = parse_color("#0000ff")
+                                self.neopixel = parse_color("#00ff00")
                                 r.write(bytes([4, 5, 6]))
 
 
