@@ -34,20 +34,6 @@ class RokiX:
     def run(self):
         self.pixels[0] = parse_color("#ffffff")
         if self.primary:
-            # while True:
-            #     i2c = busio.I2C(scl=self.i2c_scl_pin, sda=self.i2c_sda_pin)
-            #     if i2c.try_lock():
-            #         with I2CDevice(i2c, I2C_DEVICE_ID, False) as device:
-            #             while True:
-            #                 device.readinto(self.buffer)
-            #                 if self.buffer:
-            #                     self.pixels[0] = parse_color("#00ff00")
-            #                 else:
-            #                     self.pixels[0] = parse_color("#ff0000")
-            #                 print(self.buffer)
-            #     else:
-            #         continue
-
             for i in range(10):
                 try:
                     with busio.I2C(scl=self.i2c_scl_pin, sda=self.i2c_sda_pin) as i2c:
@@ -87,4 +73,5 @@ class RokiX:
 
 
 if __name__ == "__main__":
+    time.sleep(1)
     RokiX().run()
