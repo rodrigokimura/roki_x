@@ -23,10 +23,15 @@ class RokiX:
         self.buffer = bytearray(3)
 
         self.neopixel = parse_color("#ffff00")
+        self._primary: bool | None = None
 
     @property
     def primary(self):
-        return supervisor.runtime.usb_connected
+        if self._primary is None:
+            # call to supervisor.runtime.usb_connected needs time to work
+            time.sleep(1)
+            self._primary = supervisor.runtime.usb_connected
+        return self._primary
 
     @property
     def neopixel(self):
@@ -36,34 +41,31 @@ class RokiX:
     def neopixel(self, value):
         self._pixels[0] = value
 
-    def get_device(self):
-        with busio.I2C(scl=self.i2c_scl_pin, sda=self.i2c_sda_pin) as i2c:
-            with I2CDevice(i2c, I2C_DEVICE_ID, True) as device:
-                yield device
-
     def run(self):
         if self.primary:
-            with busio.I2C(scl=self.i2c_scl_pin, sda=self.i2c_sda_pin) as i2c:
-                with I2CDevice(i2c, I2C_DEVICE_ID, False) as device:
-                    self.neopixel = parse_color("#00ffff")
-                    time.sleep(1)
-                    while True:
-                        device.readinto(self.buffer)
-                        if self.buffer:
-                            self.neopixel = parse_color("#0000ff")
-                        else:
-                            self.neopixel = parse_color("#ff0000")
-                        print(self.buffer)
+            self.run_as_primary()
         else:
-            with I2CTarget(
-                self.i2c_scl_pin, self.i2c_sda_pin, (I2C_DEVICE_ID,)
-            ) as device:
+            self.run_as_secondary()
+
+    def run_as_primary(self):
+        with busio.I2C(scl=self.i2c_scl_pin, sda=self.i2c_sda_pin) as i2c:
+            with I2CDevice(i2c, I2C_DEVICE_ID, False) as device:
                 self.neopixel = parse_color("#00ffff")
                 time.sleep(1)
                 while True:
-                    r = device.request()
-                    if not r:
-                        continue
+                    device.readinto(self.buffer)
+                    if self.buffer:
+                        self.neopixel = parse_color("#0000ff")
+                    else:
+                        self.neopixel = parse_color("#ff0000")
+                    print(self.buffer)
+
+    def run_as_secondary(self):
+        with I2CTarget(self.i2c_scl_pin, self.i2c_sda_pin, (I2C_DEVICE_ID,)) as device:
+            self.neopixel = parse_color("#00ffff")
+            time.sleep(1)
+            while True:
+                if r := device.request():
                     with r:
                         if r.address == I2C_DEVICE_ID:
                             if not r.is_read:
@@ -76,7 +78,4 @@ class RokiX:
 
 
 if __name__ == "__main__":
-    # call to supervisor.runtime.usb_connected needs time to work
-    time.sleep(1)
-
     RokiX().run()
