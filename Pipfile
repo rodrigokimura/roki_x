@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+rshell = "*"
+adafruit-ampy = "*"
+circuitpython-stubs = "*"
+adafruit-circuitpython-hid = "*"
+adafruit-circuitpython-neopixel = "*"
+adafruit-circuitpython-mcp230xx = "*"
+circup = "*"
+
+[dev-packages]
+black = "*"
+isort = "*"
+pytest = "*"
