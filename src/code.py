@@ -73,5 +73,7 @@ class RokiX:
 
 
 if __name__ == "__main__":
+    # call to supervisor.runtime.usb_connected needs time to work
     time.sleep(1)
+
     RokiX().run()
