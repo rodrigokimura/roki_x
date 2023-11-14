@@ -13,38 +13,38 @@ def get_opts(cls: type[object]):
 
 
 class KeyWrapper:
-    sender_map = {
-        Keyboard(usb_hid.devices): Keycode,
-        Mouse(usb_hid.devices): Mouse,
-        ConsumerControl(usb_hid.devices): ConsumerControlCode,
-    }
+    __slot__ = ("key_names", "key_codes", "senders")
 
     def __init__(self, keys: str | list[str]) -> None:
         if isinstance(keys, str):
             keys = [keys]
-
-        self.key_sets = {
-            sender: get_opts(contants) for sender, contants in self.sender_map.items()
+        sender_map = {
+            Keyboard(usb_hid.devices): Keycode,
+            Mouse(usb_hid.devices): Mouse,
+            ConsumerControl(usb_hid.devices): ConsumerControlCode,
         }
-        self._sanity_check()
-        self.press_commands = []
-        self.release_commands = []
+
+        key_sets = {
+            sender: get_opts(constants) for sender, constants in sender_map.items()
+        }
+        self._sanity_check(key_sets)
+        self.key_names = keys
         self.key_codes = []
         self.senders = []
         for key in keys:
             key = key.upper()
-            for sender, key_set in self.key_sets.items():
+            for sender, key_set in key_sets.items():
                 if key in key_set:
-                    key_code = getattr(self.sender_map[sender], key)
+                    key_code = getattr(sender_map[sender], key)
                     self.senders.append(sender)
                     self.key_codes.append(key_code)
 
-    def _sanity_check(self):
+    def _sanity_check(self, key_sets):
         union_all = set()
-        for s in self.key_sets.values():
+        for s in key_sets.values():
             union_all |= s
 
-        assert sum(len(s) for s in self.key_sets.values()) == len(
+        assert sum(len(s) for s in key_sets.values()) == len(
             union_all
         ), "Overlapping contanst names"
 
