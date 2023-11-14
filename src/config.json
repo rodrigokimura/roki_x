@@ -1,51 +1,22 @@
 {
   "layers": [
     {
-      "name": "custom1",
+      "name": "main",
       "color": "#e63946",
-      "stick": {
-        "x": 1,
-        "y": 1,
-        "on_move_start": "",
-        "on_move_end": ""
-      },
-      "encoder": {
-        "cw": "volume_increment",
-        "ccw": "volume_decrement"
-      }
-    },
-    {
-      "name": "custom2",
-      "color": "#3a86ff",
-      "stick": "wheel",
-      "encoder": {
-        "cw": "up_arrow",
-        "ccw": "down_arrow"
-      }
-    },
-    {
-      "name": "custom3",
-      "color": "#a7c957",
-      "stick": "wheel",
-      "encoder": {
-        "cw": [
-          "shift",
-          "l"
-        ],
-        "ccw": [
-          "shift",
-          "h"
-        ]
-      }
-    },
-    {
-      "name": "custom4",
-      "color": "#ffbe0b",
-      "stick": "wheel",
-      "encoder": {
-        "cw": "l",
-        "ccw": "h"
-      }
+      "primary_keys": [
+        ["escape", "one", "two", "three", "four", "five"],
+        ["tab", "q", "w", "e", "r", "t"],
+        ["left_shift", "a", "s", "d", "f", "g"],
+        ["left_shift", "z", "x", "c", "v", "b"],
+        ["left_control", "left_gui", "left_alt", "space", "enter", "caps_lock"]
+      ],
+      "secondary_keys": [
+        ["six", "seven", "eight", "nine", "zero", "escape"],
+        ["y", "u", "i", "o", "p", "tab"],
+        ["h", "j", "k", "l", "semicolon", "right_shift"],
+        ["n", "m", "comma", "period", "backslash", "right_shift"],
+        ["a", "backspace", "space", "right_alt", "right_gui", "right_control"]
+      ]
     }
   ]
 }
