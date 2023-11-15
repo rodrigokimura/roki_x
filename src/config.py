@@ -29,12 +29,12 @@ class Layer:
 
 
 class Config:
-    layers: list[Layer]
+    layers: tuple[Layer]
 
     @classmethod
     def read(cls):
         with open("config.json") as file:
             config = json.load(file)
         i = cls()
-        i.layers = [Layer.from_dict(layer) for layer in config.get("layers", {})]
+        i.layers = tuple(Layer.from_dict(layer) for layer in config.get("layers", {}))
         return i
