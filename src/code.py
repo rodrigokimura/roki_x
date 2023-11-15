@@ -39,8 +39,12 @@ class RokiX:
         row_start, row_end = ROW_PINS
         col_start, col_end = COL_PINS
 
-        self.rows = [getattr(board, f"GP{i}") for i in range(row_start, row_end + 1)]
-        self.cols = [getattr(board, f"GP{i}") for i in range(col_start, col_end + 1)]
+        self.rows = tuple(
+            getattr(board, f"GP{i}") for i in range(row_start, row_end + 1)
+        )
+        self.cols = tuple(
+            getattr(board, f"GP{i}") for i in range(col_start, col_end + 1)
+        )
 
         self.curr_bitmap = bytearray(len(self.rows))
         self.last_bitmap = bytearray(len(self.rows))

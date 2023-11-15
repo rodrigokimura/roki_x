@@ -12,17 +12,19 @@ def get_opts(cls: type[object]):
     }
 
 
+sender_map = {
+    Keyboard(usb_hid.devices): Keycode,
+    Mouse(usb_hid.devices): Mouse,
+    ConsumerControl(usb_hid.devices): ConsumerControlCode,
+}
+
+
 class KeyWrapper:
     __slot__ = ("key_names", "key_codes", "senders")
 
     def __init__(self, keys: str | list[str]) -> None:
         if isinstance(keys, str):
             keys = [keys]
-        sender_map = {
-            Keyboard(usb_hid.devices): Keycode,
-            Mouse(usb_hid.devices): Mouse,
-            ConsumerControl(usb_hid.devices): ConsumerControlCode,
-        }
 
         key_sets = {
             sender: get_opts(constants) for sender, constants in sender_map.items()
@@ -46,7 +48,7 @@ class KeyWrapper:
 
         assert sum(len(s) for s in key_sets.values()) == len(
             union_all
-        ), "Overlapping contanst names"
+        ), "Overlapping constant names"
 
     def _press(self, sender, key_code):
         if isinstance(sender, ConsumerControl):
