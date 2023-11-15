@@ -1,7 +1,5 @@
-import sys
 import time
 
-import adafruit_hid
 import board
 import busio
 from adafruit_bus_device.i2c_device import I2CDevice
@@ -10,11 +8,13 @@ from keypad import KeyMatrix
 from utils import (
     diff_bitmaps,
     get_coords,
+    host_microcontroller,
     parse_color,
     to_bytes,
 )
 
-if "pytest" not in sys.modules:
+if host_microcontroller():
+    import adafruit_hid
     import neopixel
     import supervisor  # type: ignore
     from i2ctarget import I2CTarget  # type: ignore

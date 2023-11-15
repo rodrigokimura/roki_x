@@ -1,9 +1,12 @@
-import usb_hid
-from adafruit_hid.consumer_control import ConsumerControl
-from adafruit_hid.consumer_control_code import ConsumerControlCode
-from adafruit_hid.keyboard import Keyboard
-from adafruit_hid.keycode import Keycode
-from adafruit_hid.mouse import Mouse
+from utils import host_microcontroller
+
+if host_microcontroller():
+    import usb_hid
+    from adafruit_hid.consumer_control import ConsumerControl
+    from adafruit_hid.consumer_control_code import ConsumerControlCode
+    from adafruit_hid.keyboard import Keyboard
+    from adafruit_hid.keycode import Keycode
+    from adafruit_hid.mouse import Mouse
 
 
 def get_opts(cls: type[object]):

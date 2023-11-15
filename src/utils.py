@@ -1,3 +1,9 @@
+def host_microcontroller():
+    import sys
+
+    return "pytest" not in sys.modules
+
+
 def parse_color(color: str | list[int]) -> tuple[int, int, int]:
     if isinstance(color, str):
         if color[0] == "#":
