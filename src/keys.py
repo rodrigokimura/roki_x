@@ -12,11 +12,16 @@ def get_opts(cls: type[object]):
     }
 
 
-sender_map = {
-    Keyboard(usb_hid.devices): Keycode,
-    Mouse(usb_hid.devices): Mouse,
-    ConsumerControl(usb_hid.devices): ConsumerControlCode,
-}
+sender_map = {}
+
+
+def init():
+    global sender_map
+    sender_map = {
+        Keyboard(usb_hid.devices): Keycode,
+        Mouse(usb_hid.devices): Mouse,
+        ConsumerControl(usb_hid.devices): ConsumerControlCode,
+    }
 
 
 class KeyWrapper:

@@ -1,6 +1,6 @@
 import json
 
-from keys import KeyWrapper
+from keys import KeyWrapper, init
 from utils import parse_color
 
 
@@ -12,6 +12,7 @@ class Layer:
 
     @classmethod
     def from_dict(cls, data: dict):
+        init()
         i = cls()
         i.name = data.get("name", "no name")
         c = data.get("color", "#000000")
