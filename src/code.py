@@ -1,24 +1,16 @@
 import time
 
+import adafruit_hid
 import board
 import busio
+import neopixel
+import supervisor  # type: ignore
 from adafruit_bus_device.i2c_device import I2CDevice
-from config import Config
+from i2ctarget import I2CTarget  # type: ignore
 from keypad import KeyMatrix
-from utils import (
-    diff_bitmaps,
-    get_coords,
-    host_microcontroller,
-    parse_color,
-    to_bytes,
-)
 
-if host_microcontroller():
-    import adafruit_hid
-    import neopixel
-    import supervisor  # type: ignore
-    from i2ctarget import I2CTarget  # type: ignore
-
+from config import Config
+from utils import diff_bitmaps, get_coords, parse_color, to_bytes
 
 I2C_DEVICE_ID = 0x08
 ROW_PINS = (11, 15)
