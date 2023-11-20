@@ -23,6 +23,9 @@ class MockKeyboard(MockDevice):
     def press(self, _):
         ...
 
+    def release(self, _):
+        ...
+
 
 class MockMouse(MockDevice):
     LEFT_BUTTON = 0

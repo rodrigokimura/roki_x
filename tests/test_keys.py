@@ -34,4 +34,8 @@ def test_init():
 def test_key_wrapper():
     init()
     k = KeyWrapper("a")
-    k.press()
+    k.press_and_release()
+    k = KeyWrapper("left_button")
+    k.press_and_release()
+    k = KeyWrapper("volume_up")
+    k.press_and_release()
