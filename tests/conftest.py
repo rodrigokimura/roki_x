@@ -1,8 +1,6 @@
 import sys
 from unittest.mock import MagicMock
 
-import pytest
-
 board = MagicMock()
 busio = MagicMock()
 keypad = MagicMock()

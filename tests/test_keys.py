@@ -16,18 +16,19 @@ def test_sender_map_not_initialised():
     assert sender_map == {}
 
 
-def test_init():
+@patch("keys.get_opts", side_effect=cycle([{"A"}, {"B"}, {"C"}]))
+def test_init(m):
+    init()
     from keys import sender_map
 
-    init()
     assert sender_map != {}
 
 
 @patch("keys.get_opts", side_effect=cycle([{"A"}, {"B"}, {"C"}]))
 def test_key_wraper(m):
+    init()
     from keys import sender_map
 
-    init()
     k = KeyWrapper("a")
     k.press()
     print(k)
