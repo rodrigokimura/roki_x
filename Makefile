@@ -18,8 +18,11 @@ put:
 check:
 	@rshell -l
 
-test:
+run:
 	@ampy -p /dev/ttyACM1 run src/code.py
+
+test:
+	@pipenv run pytest --cov -s
 
 reset:
 	@ampy -p /dev/ttyACM1 reset

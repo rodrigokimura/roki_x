@@ -7,13 +7,52 @@ keypad = MagicMock()
 keypad.KeyMatrix = MagicMock()
 adafruit_hid = MagicMock()
 adafruit_hid_consumer_control = MagicMock()
-adafruit_hid_consumer_control.send = MagicMock()
+
+
+class MockDevice:
+    def __init__(self, _) -> None:
+        ...
+
+
+class MockMedia(MockDevice):
+    def send(self, _):
+        ...
+
+
+class MockKeyboard(MockDevice):
+    def press(self, _):
+        ...
+
+
+class MockMouse(MockDevice):
+    LEFT_BUTTON = 0
+
+    def click(self, _):
+        ...
+
+
+class MockKeycode:
+    A = 0
+    B = 1
+    C = 2
+
+
+class MockMediaKey:
+    VOLUME_UP = 0
+
+
+adafruit_hid_consumer_control.ConsumerControl = MockMedia
 
 adafruit_hid_consumer_control_code = MagicMock()
-adafruit_hid_consumer_control_code.A = MagicMock()
+adafruit_hid_consumer_control_code.ConsumerControlCode = MockMediaKey
 adafruit_hid_keyboard = MagicMock()
+adafruit_hid_keyboard.Keyboard = MockKeyboard
+
 adafruit_hid_keycode = MagicMock()
+adafruit_hid_keycode.Keycode = MockKeycode
 adafruit_hid_mouse = MagicMock()
+adafruit_hid_mouse.Mouse = MockMouse
+
 neopixel = MagicMock()
 supervisor = MagicMock()
 i2ctarget = MagicMock()

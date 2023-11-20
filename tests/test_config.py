@@ -35,7 +35,6 @@ def config_data():
         yield m
 
 
-@patch("keys.get_opts", side_effect=cycle([{"A"}, {"B"}, {"C"}]))
-def test_config(m, config_data):
+def test_config(config_data):
     c = Config.read()
     assert isinstance(c, Config)
