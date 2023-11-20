@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import usb_hid
 from adafruit_hid.consumer_control import ConsumerControl as Media
 from adafruit_hid.consumer_control_code import ConsumerControlCode as MediaKey
