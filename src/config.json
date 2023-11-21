@@ -7,14 +7,32 @@
         ["escape", "one", "two", "three", "four", "five"],
         ["tab", "q", "w", "e", "r", "t"],
         ["left_shift", "a", "s", "d", "f", "g"],
-        ["left_shift", "z", "x", "c", "v", "b"],
+        ["layer_1_hold", "z", "x", "c", "v", "b"],
         ["left_control", "left_gui", "left_alt", "space", "enter", "caps_lock"]
       ],
       "secondary_keys": [
         ["six", "seven", "eight", "nine", "zero", "escape"],
         ["y", "u", "i", "o", "p", "tab"],
         ["h", "j", "k", "l", "semicolon", "right_shift"],
-        ["n", "m", "comma", "period", "backslash", "right_shift"],
+        ["n", "m", "comma", "period", "backslash", "layer_1_hold"],
+        ["a", "backspace", "space", "right_alt", "right_gui", "right_control"]
+      ]
+    },
+    {
+      "name": "main",
+      "color": "#e63946",
+      "primary_keys": [
+        ["escape", "one", "two", "three", "four", "five"],
+        ["tab", "q", "w", "e", "r", "t"],
+        ["left_shift", "a", "s", "d", "f", "g"],
+        ["layer_1_hold", "z", "x", "c", "v", "b"],
+        ["left_control", "left_gui", "left_alt", "space", "enter", "caps_lock"]
+      ],
+      "secondary_keys": [
+        ["six", "seven", "eight", "nine", "zero", "escape"],
+        ["y", "u", "i", "o", "p", "tab"],
+        ["h", "DOWN_ARROW", "k", "l", "semicolon", "right_shift"],
+        ["n", "m", "comma", "period", "backslash", "layer_1_hold"],
         ["a", "backspace", "space", "right_alt", "right_gui", "right_control"]
       ]
     }

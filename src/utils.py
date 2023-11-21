@@ -1,3 +1,11 @@
+try:
+    from typing import TYPE_CHECKING as t
+
+    TYPE_CHECKING = t
+except ImportError:
+    TYPE_CHECKING = False
+
+
 def parse_color(color: str | list[int]) -> tuple[int, int, int]:
     if isinstance(color, str):
         if color[0] == "#":

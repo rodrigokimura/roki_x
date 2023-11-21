@@ -49,7 +49,6 @@ class RokiX:
         if self.primary:
             # TODO: check why this doesn't work on the secondary side
             self.config = Config.read()
-            print(self.config)
 
     @property
     def primary(self):
@@ -75,7 +74,7 @@ class RokiX:
 
     @property
     def layer(self):
-        return self.config.layers[0]
+        return self.config.layer
 
     def run_as_primary(self):
         with busio.I2C(scl=self.i2c_scl_pin, sda=self.i2c_sda_pin) as i2c:  # type: ignore

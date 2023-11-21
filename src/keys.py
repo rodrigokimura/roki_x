@@ -7,14 +7,39 @@ from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
 from adafruit_hid.mouse import Mouse
 
-try:
-    from typing import TYPE_CHECKING
-except ImportError:
-    TYPE_CHECKING = False
+from manager import Commands, Manager
+from utils import TYPE_CHECKING
+
+
+class KeyboardCode:
+    def get(self, n):
+        return getattr(Keycode, n)
+
+    def __contains__(self, n):
+        return hasattr(Keycode, n)
+
+
+class MouseButton:
+    def get(self, n):
+        return getattr(Mouse, n)
+
+    def __contains__(self, n):
+        return hasattr(Mouse, n)
+
+
+class MediaFunction:
+    def get(self, n):
+        return getattr(MediaKey, n)
+
+    def __contains__(self, n):
+        return hasattr(MediaKey, n)
+
 
 if TYPE_CHECKING:
-    Device = Keyboard | Mouse | Media
-    Codes = Keycode | Mouse | MediaKey
+    from config import Config
+
+    Device = Keyboard | Mouse | Media | Manager
+    Code = KeyboardCode | MouseButton | MediaFunction | Commands
 
 
 def get_opts(cls: type[object]):
@@ -23,28 +48,20 @@ def get_opts(cls: type[object]):
     }
 
 
-sender_map: dict[Device, tuple[type[Codes], set[str]]] = {}
+sender_map: dict[Device, Code] = {}
 
 
-def init():
+def init(c: Config):
     global sender_map
     sender_map = {
-        Keyboard(usb_hid.devices): (Keycode, get_opts(Keycode)),
-        Mouse(usb_hid.devices): (Mouse, get_opts(Mouse)),
-        Media(usb_hid.devices): (MediaKey, get_opts(MediaKey)),
+        Keyboard(usb_hid.devices): KeyboardCode(),
+        Mouse(usb_hid.devices): MouseButton(),
+        Media(usb_hid.devices): MediaFunction(),
+        Manager(c): Commands(),
     }
-    union_all = set()
-    for _, s in sender_map.values():
-        union_all |= s
-
-    assert sum(len(s) for _, s in sender_map.values()) == len(
-        union_all
-    ), "Overlapping constant names"
 
 
 class KeyWrapper:
-    __slot__ = ("key_names", "params")
-
     def __init__(self, keys: str | list[str]) -> None:
         global sender_map
         if isinstance(keys, str):
@@ -54,10 +71,10 @@ class KeyWrapper:
 
         self.key_names = keys
         self.params = tuple(
-            (sender, getattr(key_container, key))
-            for sender, (key_container, key_set) in sender_map.items()
+            (sender, key_container.get(key))
+            for sender, key_container in sender_map.items()
             for key in keys
-            if key in key_set
+            if key in key_container
         )
 
     def _press(self, sender, key_code):
@@ -67,6 +84,8 @@ class KeyWrapper:
             sender.press(key_code)
         elif isinstance(sender, Mouse):
             sender.click(key_code)
+        elif isinstance(sender, Manager):
+            sender.on_press(key_code)
 
     def _release(self, sender, key_code):
         if isinstance(sender, Media):
@@ -75,6 +94,8 @@ class KeyWrapper:
             sender.release(key_code)
         elif isinstance(sender, Mouse):
             pass
+        elif isinstance(sender, Manager):
+            sender.on_release(key_code)
 
     def press(self):
         for sender, key_code in self.params:

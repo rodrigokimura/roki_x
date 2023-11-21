@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+from config import Config
 from keys import KeyWrapper, get_opts, init, sender_map
 
 
@@ -10,6 +11,11 @@ from keys import KeyWrapper, get_opts, init, sender_map
 def mock_get_opts():
     with patch("keys.get_opts", side_effect=cycle([{"A"}, {"B"}, {"C"}])) as m:
         yield m
+
+
+@pytest.fixture
+def mock_config():
+    return Config()
 
 
 def test_get_opts():
@@ -24,15 +30,15 @@ def test_sender_map_not_initialised():
     assert sender_map == {}
 
 
-def test_init():
-    init()
+def test_init(mock_config: Config):
+    init(mock_config)
     from keys import sender_map
 
     assert sender_map != {}
 
 
-def test_key_wrapper():
-    init()
+def test_key_wrapper(mock_config: Config):
+    init(mock_config)
     k = KeyWrapper("a")
     k.press_and_release()
     k = KeyWrapper("left_button")

@@ -12,7 +12,6 @@ class Layer:
 
     @classmethod
     def from_dict(cls, data: dict):
-        init()
         i = cls()
         i.name = data.get("name", "no name")
         c = data.get("color", "#000000")
@@ -31,10 +30,19 @@ class Layer:
 class Config:
     layers: tuple[Layer]
 
+    def __init__(self) -> None:
+        self.layer_index = 0
+        self.layers = tuple()
+
+    @property
+    def layer(self):
+        return self.layers[self.layer_index]
+
     @classmethod
     def read(cls):
         with open("config.json") as file:
             config = json.load(file)
         i = cls()
+        init(i)
         i.layers = tuple(Layer.from_dict(layer) for layer in config.get("layers", {}))
         return i
