@@ -62,7 +62,12 @@ def init(c: Config):
 
 
 class KeyWrapper:
-    def __init__(self, keys: str | list[str]) -> None:
+    def __init__(self, keys: str | list[str] | None) -> None:
+        if keys is None:
+            self.key_names = "noop"
+            self.params = tuple()
+            return
+
         global sender_map
         if isinstance(keys, str):
             keys = [keys.upper()]
