@@ -22,7 +22,7 @@ run:
 	@ampy -p /dev/ttyACM1 run src/code.py
 
 test:
-	@pipenv run pytest --cov -s
+	@pipenv run pytest --cov src/ -s --cov-report html --cov-report term
 
 reset:
 	@ampy -p /dev/ttyACM1 reset

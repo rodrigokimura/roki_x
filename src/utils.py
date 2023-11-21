@@ -1,12 +1,12 @@
 try:
-    from typing import TYPE_CHECKING as t
+    from typing import TYPE_CHECKING as __t
 
-    TYPE_CHECKING = t
-except ImportError:
+    TYPE_CHECKING = __t
+except ImportError:  # pragma: no cover
     TYPE_CHECKING = False
 
 
-def parse_color(color: str | list[int]) -> tuple[int, int, int]:
+def parse_color(color: str | list[int] | tuple[int, int, int]) -> tuple[int, int, int]:
     if isinstance(color, str):
         if color[0] == "#":
             color = color[1:]
@@ -17,7 +17,7 @@ def parse_color(color: str | list[int]) -> tuple[int, int, int]:
         b = color[4:]
         return int(r, 16), int(g, 16), int(b, 16)
 
-    if isinstance(color, list):
+    if isinstance(color, (list, tuple)):
         r = color[0]
         g = color[1]
         b = color[2]
@@ -46,13 +46,6 @@ def get_coords(i: int, col_count: int = 6):
     c = i % col_count
     r = i // col_count
     return r, c
-
-
-def diff_matrices(first: list[list[bool]], second: list[list[bool]]):
-    for r, row in enumerate(first):
-        for c, value in enumerate(row):
-            if value is not (status := second[r][c]):
-                yield (r, c), status
 
 
 def diff_bitmaps(a: bytearray, b: bytearray, byte_size=6):

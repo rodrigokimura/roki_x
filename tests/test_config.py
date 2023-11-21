@@ -1,6 +1,5 @@
 import json
-from itertools import cycle
-from unittest.mock import mock_open, patch
+from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 
@@ -35,6 +34,8 @@ def config_data():
         yield m
 
 
-def test_config(config_data):
+def test_config(config_data: MagicMock):
     c = Config.read()
     assert isinstance(c, Config)
+    config_data.assert_called_once()
+    assert c.layer == c.layers[0]

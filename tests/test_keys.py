@@ -1,29 +1,12 @@
-from itertools import cycle
-from unittest.mock import patch
-
 import pytest
 
 from config import Config
-from keys import KeyWrapper, get_opts, init, sender_map
-
-
-@pytest.fixture
-def mock_get_opts():
-    with patch("keys.get_opts", side_effect=cycle([{"A"}, {"B"}, {"C"}])) as m:
-        yield m
+from keys import KeyWrapper, init, sender_map
 
 
 @pytest.fixture
 def mock_config():
     return Config()
-
-
-def test_get_opts():
-    class MockClient:
-        A = 1
-        _B = 2
-
-    assert get_opts(MockClient) == {"A"}
 
 
 def test_sender_map_not_initialised():
@@ -44,4 +27,8 @@ def test_key_wrapper(mock_config: Config):
     k = KeyWrapper("left_button")
     k.press_and_release()
     k = KeyWrapper("volume_up")
+    k.press_and_release()
+    k = KeyWrapper()
+    k.press_and_release()
+    k = KeyWrapper("layer_1_hold")
     k.press_and_release()

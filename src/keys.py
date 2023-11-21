@@ -12,40 +12,36 @@ from utils import TYPE_CHECKING
 
 
 class KeyboardCode:
-    def get(self, n):
+    def get(self, n: str) -> int:
         return getattr(Keycode, n)
 
-    def __contains__(self, n):
+    def __contains__(self, n: str) -> bool:
         return hasattr(Keycode, n)
 
 
 class MouseButton:
-    def get(self, n):
+    def get(self, n: str) -> int:
         return getattr(Mouse, n)
 
-    def __contains__(self, n):
+    def __contains__(self, n: str) -> bool:
         return hasattr(Mouse, n)
 
 
 class MediaFunction:
-    def get(self, n):
+    def get(self, n: str) -> int:
         return getattr(MediaKey, n)
 
-    def __contains__(self, n):
+    def __contains__(self, n: str) -> bool:
         return hasattr(MediaKey, n)
 
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from config import Config
 
     Device = Keyboard | Mouse | Media | Manager
     Code = KeyboardCode | MouseButton | MediaFunction | Commands
-
-
-def get_opts(cls: type[object]):
-    return {
-        k for k, v in cls.__dict__.items() if not k.startswith("_") and not callable(v)
-    }
 
 
 sender_map: dict[Device, Code] = {}
@@ -62,7 +58,7 @@ def init(c: Config):
 
 
 class KeyWrapper:
-    def __init__(self, keys: str | list[str] | None) -> None:
+    def __init__(self, keys: str | list[str] | None = None) -> None:
         if keys is None:
             self.key_names = "noop"
             self.params = tuple()
@@ -82,7 +78,7 @@ class KeyWrapper:
             if key in key_container
         )
 
-    def _press(self, sender, key_code):
+    def _press(self, sender: Device, key_code: Any) -> None:
         if isinstance(sender, Media):
             sender.send(key_code)
         elif isinstance(sender, Keyboard):
@@ -92,7 +88,7 @@ class KeyWrapper:
         elif isinstance(sender, Manager):
             sender.on_press(key_code)
 
-    def _release(self, sender, key_code):
+    def _release(self, sender: Device, key_code: Any) -> None:
         if isinstance(sender, Media):
             pass
         elif isinstance(sender, Keyboard):
@@ -102,14 +98,14 @@ class KeyWrapper:
         elif isinstance(sender, Manager):
             sender.on_release(key_code)
 
-    def press(self):
+    def press(self) -> None:
         for sender, key_code in self.params:
             self._press(sender, key_code)
 
-    def release(self):
+    def release(self) -> None:
         for sender, key_code in self.params:
             self._release(sender, key_code)
 
-    def press_and_release(self):
+    def press_and_release(self) -> None:
         self.press()
         self.release()
