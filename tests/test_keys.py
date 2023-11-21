@@ -22,6 +22,8 @@ def test_init(mock_config: Config):
 
 def test_key_wrapper(mock_config: Config):
     init(mock_config)
+    k = KeyWrapper(["a", "b"])
+    k.press_and_release()
     k = KeyWrapper("a")
     k.press_and_release()
     k = KeyWrapper("left_button")

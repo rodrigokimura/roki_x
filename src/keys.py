@@ -35,7 +35,7 @@ class MediaFunction:
         return hasattr(MediaKey, n)
 
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing import Any
 
     from config import Config

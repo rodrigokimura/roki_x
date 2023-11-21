@@ -1,5 +1,8 @@
+import json
 import sys
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, mock_open, patch
+
+import pytest
 
 board = MagicMock()
 busio = MagicMock()
@@ -74,3 +77,31 @@ sys.modules["neopixel"] = neopixel
 sys.modules["supervisor"] = supervisor
 sys.modules["i2ctarget"] = i2ctarget
 sys.modules["usb_hid"] = usb_hid
+
+
+@pytest.fixture
+def config_data():
+    data = {
+        "layers": [
+            {
+                "name": "main",
+                "color": "#e63946",
+                "primary_keys": [
+                    ["a", "b", "c", "a", "b", "c"],
+                    ["a", "b", "c", "a", "b", "c"],
+                    ["a", "b", "c", "a", "b", "c"],
+                    ["a", "b", "c", "a", "b", "c"],
+                    ["a", "b", "c", "a", "b", "c"],
+                ],
+                "secondary_keys": [
+                    ["a", "b", "c", "a", "b", "c"],
+                    ["a", "b", "c", "a", "b", "c"],
+                    ["a", "b", "c", "a", "b", "c"],
+                    ["a", "b", "c", "a", "b", "c"],
+                    ["a", "b", "c", "a", "b", "c"],
+                ],
+            }
+        ]
+    }
+    with patch("config.open", mock_open(read_data=json.dumps(data))) as m:
+        yield m
