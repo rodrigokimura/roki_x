@@ -2,7 +2,7 @@
   "layers": [
     {
       "name": "main",
-      "color": "#e63946",
+      "color": "#ffffff",
       "primary_keys": [
         ["escape", "one", "two", "three", "four", "five"],
         ["tab", "q", "w", "e", "r", "t"],
@@ -27,7 +27,7 @@
     },
     {
       "name": "main",
-      "color": "#e63946",
+      "color": "#ff00ff",
       "primary_keys": [
         ["f1", "f2", "f3", "f4", "f5", "f6"],
         [null, null, null, null, null, null],

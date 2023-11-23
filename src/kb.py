@@ -9,11 +9,15 @@ from adafruit_bus_device.i2c_device import I2CDevice
 from i2ctarget import I2CTarget  # type: ignore
 from keypad import KeyMatrix
 
-from config import Config
+from config import Config, Layer
 from utils import diff_bitmaps, get_coords, parse_color, to_bytes
 
 ROW_PINS = (11, 15)
 COL_PINS = (16, 21)
+
+# colors
+INITIAL = parse_color("#ffff00")
+I2C_SET = parse_color("#00ffff")
 
 
 class RokiX:
@@ -25,8 +29,9 @@ class RokiX:
         self.i2c_scl_pin = board.GP1  # type: ignore
         self.i2c_sda_pin = board.GP0  # type: ignore
 
-        self.neopixel = parse_color("#ffff00")
+        self.neopixel = INITIAL
         self._primary: bool | None = None
+        self._prev_layer_index: int = 0
 
         row_start, row_end = ROW_PINS
         col_start, col_end = COL_PINS
@@ -51,7 +56,7 @@ class RokiX:
             self.config = Config.read()
 
     @property
-    def primary(self):
+    def primary(self) -> bool:
         if self._primary is None:
             # call to supervisor.runtime.usb_connected needs time to work
             time.sleep(1)
@@ -63,8 +68,9 @@ class RokiX:
         return self._pixels[0]
 
     @neopixel.setter
-    def neopixel(self, value):
-        self._pixels[0] = value
+    def neopixel(self, value: tuple[int, int, int]) -> None:
+        if len(value) == 3:
+            self._pixels[0] = value
 
     async def run(self):
         if self.primary:
@@ -73,13 +79,13 @@ class RokiX:
             await self.run_as_secondary()
 
     @property
-    def layer(self):
+    def layer(self) -> Layer:
         return self.config.layer
 
-    async def run_as_primary(self):
+    async def run_as_primary(self) -> None:
         with busio.I2C(scl=self.i2c_scl_pin, sda=self.i2c_sda_pin) as i2c:  # type: ignore
             with I2CDevice(i2c, self.i2c_device_id, False) as device:  # type: ignore
-                self.neopixel = parse_color("#00ffff")
+                self.neopixel = I2C_SET
                 await asyncio.sleep(1)
                 while True:
                     event = self.key_matrix.events.get()
@@ -90,10 +96,6 @@ class RokiX:
                         (key.press if event.pressed else key.release)()
 
                     device.readinto(self.curr_bitmap, end=len(self.rows))
-                    if self.curr_bitmap:
-                        self.neopixel = parse_color("#0000ff")
-                    else:
-                        self.neopixel = parse_color("#ff0000")
 
                     for (row, col), pressed in diff_bitmaps(
                         self.last_bitmap, self.curr_bitmap
@@ -102,12 +104,13 @@ class RokiX:
                         print(key.key_names)
                         (key.press if pressed else key.release)()
                     self.last_bitmap[:] = self.curr_bitmap
+                    self.change_layer(device)
 
-    async def run_as_secondary(self):
+    async def run_as_secondary(self) -> None:
         with I2CTarget(  # type: ignore
             self.i2c_scl_pin, self.i2c_sda_pin, (self.i2c_device_id,)
         ) as device:
-            self.neopixel = parse_color("#00ffff")
+            self.neopixel = I2C_SET
             await asyncio.sleep(1)
             while True:
                 event = self.key_matrix.events.get()
@@ -118,10 +121,16 @@ class RokiX:
                     with request:  # type: ignore
                         if request.address == self.i2c_device_id:
                             if not request.is_read:
-                                # TODO: add logic to receive layer
-                                request.read(1)
+                                message = request.read(n=3, ack=True)
+                                self.neopixel = tuple(message)
                             elif request.is_restart:
                                 pass
                             else:
-                                self.neopixel = parse_color("#00ff00")
                                 request.write(to_bytes(self.matrix_buffer))
+
+    def change_layer(self, device: I2CDevice):
+        if self._prev_layer_index != self.config.layer_index:
+            self._prev_layer_index = self.config.layer_index
+            if self.primary:
+                self.neopixel = self.layer.color
+                device.write(b"\x00\x00" + bytes(self.layer.color))

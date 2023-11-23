@@ -7,17 +7,17 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Manager:
-    def __init__(self, c: Config) -> None:
+    def __init__(self, config: Config) -> None:
         self._prev = 0
-        self.config = c
+        self.config = config
 
-    def on_press(self, c: Command):
-        if c.index != self.config.layer_index:
+    def on_press(self, command: Command) -> None:
+        if command.index != self.config.layer_index:
             self._prev = self.config.layer_index
-            self.config.layer_index = c.index
+            self.config.layer_index = command.index
 
-    def on_release(self, c: Command):
-        if c.type_ == "hold":
+    def on_release(self, command: Command) -> None:
+        if command.type_ == "hold":
             self.config.layer_index = self._prev
 
 

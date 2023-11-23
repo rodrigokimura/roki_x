@@ -5,11 +5,6 @@ import pytest
 from kb import RokiX
 
 
-class AsyncMock(MagicMock):
-    async def __call__(self, *args, **kwargs):
-        return super(AsyncMock, self).__call__(*args, **kwargs)
-
-
 def test_keyboard(config_data: MagicMock):
     r = RokiX(1)
     assert isinstance(r, RokiX)

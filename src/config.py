@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 
 from keys import KeyWrapper, init
@@ -11,7 +13,7 @@ class Layer:
     secondary_keys: tuple[tuple[KeyWrapper, ...], ...]
 
     @classmethod
-    def from_dict(cls, data: dict):
+    def from_dict(cls, data: dict) -> Layer:
         i = cls()
         i.name = data.get("name", "no name")
         c = data.get("color", "#000000")
