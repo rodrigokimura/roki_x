@@ -30,3 +30,9 @@ reset:
 lint:
 	@pipenv run black .
 	@pipenv run isort .
+
+keys:
+	@KEYS=$$(ampy -p /dev/ttyACM1 run src/all_keys.py); echo "const KEYS = $$KEYS;" > config/keys.js
+	@echo "Keys saved!"
+	@echo "Restarting keyboard runtime..."
+	@ampy -p /dev/ttyACM1 run src/code.py
