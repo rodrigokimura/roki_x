@@ -73,10 +73,16 @@ class RokiX:
             self._pixels[0] = value
 
     async def run(self):
-        if self.primary:
-            await self.run_as_primary()
-        else:
-            await self.run_as_secondary()
+        while True:
+            try:
+                if self.primary:
+                    await self.run_as_primary()
+                else:
+                    await self.run_as_secondary()
+            except KeyboardInterrupt:
+                exit()
+            except:
+                pass
 
     @property
     def layer(self) -> Layer:
