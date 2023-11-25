@@ -1,7 +1,11 @@
+.PHONY: config
 DEVICE_PATH := /run/media/$(USER)/CIRCUITPY
 
 install:
-	@circup install -a
+	@circup install --auto --auto-file code.py
+	@circup install --auto --auto-file kb.py
+	@circup install --auto --auto-file keys.py
+	@circup install --auto --auto-file all_keys.py
 
 update:
 	@circup update
@@ -30,6 +34,9 @@ reset:
 lint:
 	@pipenv run black .
 	@pipenv run isort .
+
+config:
+	@xdg-open config/index.html &
 
 keys:
 	@KEYS=$$(ampy -p /dev/ttyACM1 run src/all_keys.py); echo "const KEYS = $$KEYS;" > config/keys.js
