@@ -375,6 +375,10 @@ function keySelector(button) {
     selectOnKeydown: false,
     delimiter: " ",
     values: getKeys(),
+    onLabelCreate(value, text) {
+      this.find(".description").remove();
+      return this;
+    },
   });
   if (!!keys.length) dd.dropdown("set selected", keys);
   $("#key-selector")

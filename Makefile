@@ -3,9 +3,8 @@ DEVICE_PATH := /run/media/$(USER)/CIRCUITPY
 
 install:
 	@circup install --auto --auto-file code.py
-	@circup install --auto --auto-file kb.py
-	@circup install --auto --auto-file keys.py
-	@circup install --auto --auto-file all_keys.py
+	@circup install --auto --auto-file firmware/kb.py
+	@circup install --auto --auto-file firmware/keys.py
 
 update:
 	@circup update
@@ -14,10 +13,15 @@ ls:
 	ls $(DEVICE_PATH)
 
 put:
+	@rm $(DEVICE_PATH)/firmware/*.py -vf
 	@rm $(DEVICE_PATH)/*.py -vf
 	@rm $(DEVICE_PATH)/*.json -vf
 	@rm $(DEVICE_PATH)/*.toml -vf
-	@cp src/* $(DEVICE_PATH)/ -rv
+	@mkdir -p $(DEVICE_PATH)/firmware
+	@cp src/firmware/* $(DEVICE_PATH)/firmware/ -rv
+	@cp src/code.py $(DEVICE_PATH)/code.py -v
+	@cp src/boot.py $(DEVICE_PATH)/boot.py -v
+	@cp config.json $(DEVICE_PATH)/config.json -v
 
 check:
 	@rshell -l
@@ -36,10 +40,5 @@ lint:
 	@pipenv run isort .
 
 config:
-	@xdg-open config/index.html &
+	@uvicorn src.config.main:app --port 12000 --reload
 
-keys:
-	@KEYS=$$(ampy -p /dev/ttyACM1 run src/all_keys.py); echo "const KEYS = $$KEYS;" > config/keys.js
-	@echo "Keys saved!"
-	@echo "Restarting keyboard runtime..."
-	@ampy -p /dev/ttyACM1 run src/code.py
