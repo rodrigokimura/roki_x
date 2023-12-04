@@ -1,6 +1,6 @@
 import pytest
 
-from utils import (
+from firmware.utils import (
     diff_bitmaps,
     from_bytes,
     from_int,

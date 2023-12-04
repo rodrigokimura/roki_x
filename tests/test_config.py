@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from config import Config
+from firmware.config import Config
 
 
 def test_config(config_data: MagicMock):

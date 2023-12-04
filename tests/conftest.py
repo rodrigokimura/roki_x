@@ -10,6 +10,7 @@ keypad = MagicMock()
 keypad.KeyMatrix = MagicMock()
 adafruit_hid = MagicMock()
 adafruit_hid_consumer_control = MagicMock()
+watchdog = MagicMock()
 
 
 class MockDevice:
@@ -77,6 +78,8 @@ sys.modules["neopixel"] = neopixel
 sys.modules["supervisor"] = supervisor
 sys.modules["i2ctarget"] = i2ctarget
 sys.modules["usb_hid"] = usb_hid
+sys.modules["watchdog"] = watchdog
+sys.modules["microcontroller"] = watchdog
 
 
 @pytest.fixture
@@ -103,5 +106,5 @@ def config_data():
             }
         ]
     }
-    with patch("config.open", mock_open(read_data=json.dumps(data))) as m:
+    with patch("firmware.config.open", mock_open(read_data=json.dumps(data))) as m:
         yield m

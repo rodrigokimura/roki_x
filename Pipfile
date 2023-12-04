@@ -11,6 +11,8 @@ adafruit-circuitpython-hid = "*"
 adafruit-circuitpython-neopixel = "*"
 adafruit-circuitpython-mcp230xx = "*"
 circup = "*"
+fastapi = "*"
+uvicorn = "*"
 
 [dev-packages]
 black = "*"

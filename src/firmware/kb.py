@@ -8,9 +8,11 @@ import supervisor  # type: ignore
 from adafruit_bus_device.i2c_device import I2CDevice
 from i2ctarget import I2CTarget  # type: ignore
 from keypad import KeyMatrix
+from microcontroller import watchdog as w
+from watchdog import WatchDogMode  # type: ignore
 
-from config import Config, Layer
-from utils import diff_bitmaps, get_coords, parse_color, to_bytes
+from firmware.config import Config, Layer
+from firmware.utils import diff_bitmaps, get_coords, parse_color, to_bytes
 
 ROW_PINS = (11, 15)
 COL_PINS = (16, 21)
@@ -22,6 +24,10 @@ I2C_SET = parse_color("#00ffff")
 
 class RokiX:
     def __init__(self, i2c_device_id: int) -> None:
+        if w is not None:
+            w.timeout = 5
+            w.mode = WatchDogMode.RESET
+
         self._pixels = neopixel.NeoPixel(board.GP23, 1)  # type: ignore
         self._pixels.brightness = 0.1
         self.i2c_device_id = i2c_device_id
@@ -81,7 +87,7 @@ class RokiX:
                     await self.run_as_secondary()
             except KeyboardInterrupt:
                 exit()
-            except:
+            except Exception:
                 pass
 
     @property
@@ -111,6 +117,7 @@ class RokiX:
                         (key.press if pressed else key.release)()
                     self.last_bitmap[:] = self.curr_bitmap
                     self.change_layer(device)
+                    w.feed()
 
     async def run_as_secondary(self) -> None:
         with I2CTarget(  # type: ignore
@@ -133,6 +140,7 @@ class RokiX:
                                 pass
                             else:
                                 request.write(to_bytes(self.matrix_buffer))
+                        w.feed()
 
     def change_layer(self, device: I2CDevice):
         if self._prev_layer_index != self.config.layer_index:

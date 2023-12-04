@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import json
 
-from keys import KeyWrapper, init
-from utils import parse_color
+from firmware.keys import KeyWrapper, init
+from firmware.utils import parse_color
 
 
 class Layer:

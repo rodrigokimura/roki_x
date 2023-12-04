@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from kb import RokiX
+from firmware.kb import RokiX
 
 
 def test_keyboard(config_data: MagicMock):

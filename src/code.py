@@ -1,6 +1,6 @@
 import asyncio
 
-from kb import RokiX
+from firmware.kb import RokiX
 
 I2C_DEVICE_ID = 0x08
 

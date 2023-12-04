@@ -1,6 +1,6 @@
 import pytest
 
-from manager import Command, Commands
+from firmware.manager import Command, Commands
 
 
 @pytest.fixture

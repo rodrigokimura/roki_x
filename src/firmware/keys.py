@@ -7,8 +7,8 @@ from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
 from adafruit_hid.mouse import Mouse
 
-from manager import Commands, Manager
-from utils import TYPE_CHECKING
+from firmware.manager import Commands, Manager
+from firmware.utils import TYPE_CHECKING
 
 
 class KeyboardCode:
@@ -38,7 +38,7 @@ class MediaFunction:
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any
 
-    from config import Config
+    from .config import Config
 
     Device = Keyboard | Mouse | Media | Manager
     Code = KeyboardCode | MouseButton | MediaFunction | Commands

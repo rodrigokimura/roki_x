@@ -1,3 +1,5 @@
+let _keys = [];
+
 class Configuration {
   constructor() {
     this.layers = [];
@@ -197,7 +199,6 @@ class Configuration {
         secondary_keys: secondary_keys,
       });
     }
-    console.log(config);
     return config;
   }
 
@@ -207,7 +208,12 @@ class Configuration {
     }
     data = JSON.parse(data);
     for (let l of data.layers) {
-      const uuid = this.addLayer(l.name);
+      this.addLayer(l.name);
+    }
+    CONFIG.layers.forEach((e, i, _) => {
+      let uuid = e.uuid;
+      let l = data.layers[i];
+
       for (let s of ["primary_keys", "secondary_keys"]) {
         this.changeLayerColor(uuid, l.color);
         let e = $(`.keyboard[data-tab='${uuid}'] input[type=color]`);
@@ -226,7 +232,7 @@ class Configuration {
           }
         }
       }
-    }
+    });
   }
 
   getKey(id, r, c, primary) {
@@ -305,7 +311,8 @@ function addLayer() {
 }
 
 function renameLayer() {
-  const currentName = $(".menu .active.item").text();
+  const layerId = $(".menu .active.item").first().data().tab;
+  const currentName = CONFIG.layers.filter((l) => l.uuid == layerId)[0].name;
   $.modal({
     title: "Layer name",
     class: "basic",
@@ -364,6 +371,9 @@ function keySelector(button) {
     clearable: true,
     ignoreCase: true,
     ignoreSearchCase: true,
+    showOnFocus: true,
+    selectOnKeydown: false,
+    delimiter: " ",
     values: getKeys(),
   });
   if (!!keys.length) dd.dropdown("set selected", keys);
@@ -390,22 +400,31 @@ function selectKey(button, keys) {
   const hasKeys = keys !== "";
   hasKeys ? button.removeClass("basic") : button.addClass("basic");
   button.data({ key: hasKeys ? keys.join() : "" });
-  const text = hasKeys ? keys.join(", ").replaceAll("_", " ") : "";
-  button.text(text);
+  let text = [];
+  if (hasKeys) {
+    for (k of keys) {
+      text.push(getKeys().filter((_k) => _k.value == k)[0]?.name);
+    }
+  }
+
+  button.text(text.join(", "));
   button.attr("title", text);
   button.popup({ inverted: true });
 }
 
 function getKeys() {
-  let keys = [];
-  for (let k of KEYS) {
-    keys.push({ name: k.replaceAll("_", " "), value: k });
-  }
+  let keys = [..._keys];
   for (let l = 0; l < CONFIG.layers.length; l++) {
-    let k = `LAYER_${l}_HOLD`;
-    keys.push({ name: k.replaceAll("_", " "), value: k });
-    k = `LAYER_${l}_PRESS`;
-    keys.push({ name: k.replaceAll("_", " "), value: k });
+    for (action of ["HOLD", "PRESS"]) {
+      let layer = CONFIG.layers[l];
+      let k = `LAYER_${l}_${action}`;
+      keys.push({
+        name: k.replaceAll("_", " "),
+        value: k,
+        description: `${action} key to go to layer "${layer.name}"`,
+        icon: "layer group",
+      });
+    }
   }
   return keys;
 }
@@ -429,19 +448,34 @@ function downloadObjectAsJson(exportObj, exportName) {
 function getAsText(readFile) {
   var reader = new FileReader();
   reader.readAsText(readFile, "UTF-8");
-  // reader.onprogress = updateProgress;
+  reader.onprogress = console.log;
   reader.onload = (e) => CONFIG.import(e.target.result);
-  // reader.onerror = errorHandler;
+  reader.onerror = console.error;
+}
+
+function getKeysFromServer() {
+  let k = [];
+  $.api({
+    on: "now",
+    method: "get",
+    url: "/keys",
+    onResponse: function (r) {
+      for (k of r) {
+        k.description = k.description.replaceAll("``", '"');
+      }
+      _keys = [...r];
+    },
+  });
 }
 
 function init() {
+  getKeysFromServer();
   $("[title]").popup();
   $(window).on("resize", () => {
     CONFIG.resizeContainer();
   });
   CONFIG.addLayer("Main");
   $("#invisibleupload1").on("change", (e) => {
-    console.log(e);
     let file = e.target.files[0];
     if (file) getAsText(file);
   });

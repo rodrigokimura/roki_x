@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from utils import TYPE_CHECKING
+from firmware.utils import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from config import Config
+    from .config import Config
 
 
 class Manager:

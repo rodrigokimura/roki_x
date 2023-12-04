@@ -1,8 +1,8 @@
 import pytest
 
-from all_keys import get_all_keys
-from config import Config
-from keys import KeyWrapper, init, sender_map
+from firmware.all_keys import get_all_keys
+from firmware.config import Config
+from firmware.keys import KeyWrapper, init, sender_map
 
 
 @pytest.fixture
@@ -16,7 +16,7 @@ def test_sender_map_not_initialised():
 
 def test_init(mock_config: Config):
     init(mock_config)
-    from keys import sender_map
+    from firmware.keys import sender_map
 
     assert sender_map != {}
 
