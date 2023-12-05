@@ -34,7 +34,9 @@ class MockKeyboard(MockDevice):
 
 
 class MockMouse(MockDevice):
-    LEFT_BUTTON = 0
+    def __init__(self, *_) -> None:
+        super().__init__(_[0])
+        self.LEFT_BUTTON = 0
 
     def click(self, _):
         ...

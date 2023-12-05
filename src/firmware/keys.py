@@ -1,14 +1,62 @@
 from __future__ import annotations
 
+
 import usb_hid
 from adafruit_hid.consumer_control import ConsumerControl as Media
 from adafruit_hid.consumer_control_code import ConsumerControlCode as MediaKey
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
-from adafruit_hid.mouse import Mouse
+from adafruit_hid.mouse import Mouse as _Mouse
 
 from firmware.manager import Commands, Manager
 from firmware.utils import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Sequence
+    from typing import Literal
+
+    DPad = (
+        Literal["u"]
+        | Literal["d"]
+        | Literal["l"]
+        | Literal["r"]
+        | Literal["su"]
+        | Literal["sd"]
+    )
+
+
+class Mouse(_Mouse):
+    def __init__(
+        self,
+        devices: Sequence[usb_hid.Device],
+        timeout: int = 2,
+        mouse_movement: int = 20,
+        mouse_scroll: int = 2,
+    ) -> None:
+        self.mouse_movement = mouse_movement
+        self.mouse_scroll = mouse_scroll
+        super().__init__(devices, timeout)
+
+    def press(self, buttons: int | DPad) -> None:
+        if isinstance(buttons, str):
+            if buttons == "u":
+                self.move(y=self.mouse_movement)
+            elif buttons == "d":
+                self.move(y=-self.mouse_movement)
+            elif buttons == "l":
+                self.move(x=-self.mouse_movement)
+            elif buttons == "r":
+                self.move(x=self.mouse_movement)
+            elif buttons == "su":
+                self.move(wheel=self.mouse_scroll)
+            elif buttons == "sd":
+                self.move(wheel=-self.mouse_scroll)
+        else:
+            return super().press(buttons)
+
+    def release(self, buttons: int | DPad) -> None:
+        if isinstance(buttons, int):
+            return super().release(buttons)
 
 
 class KeyboardCode:
@@ -20,11 +68,20 @@ class KeyboardCode:
 
 
 class MouseButton:
-    def get(self, n: str) -> int:
-        return getattr(Mouse, n)
+    movement: dict[str, DPad] = {
+        "MOUSE_MOVE_UP": "u",
+        "MOUSE_MOVE_DOWN": "d",
+        "MOUSE_MOVE_LEFT": "l",
+        "MOUSE_MOVE_RIGHT": "r",
+        "MOUSE_SCROLL_UP": "su",
+        "MOUSE_SCROLL_DOWN": "sd",
+    }
+
+    def get(self, n: str) -> int | DPad:
+        return getattr(Mouse, n, self.movement[n])
 
     def __contains__(self, n: str) -> bool:
-        return hasattr(Mouse, n)
+        return hasattr(Mouse, n) or n in self.movement
 
 
 class MediaFunction:
@@ -84,7 +141,7 @@ class KeyWrapper:
         elif isinstance(sender, Keyboard):
             sender.press(key_code)
         elif isinstance(sender, Mouse):
-            sender.click(key_code)
+            sender.press(key_code)
         elif isinstance(sender, Manager):
             sender.on_press(key_code)
 
@@ -94,7 +151,7 @@ class KeyWrapper:
         elif isinstance(sender, Keyboard):
             sender.release(key_code)
         elif isinstance(sender, Mouse):
-            pass
+            sender.release(key_code)
         elif isinstance(sender, Manager):
             sender.on_release(key_code)
 

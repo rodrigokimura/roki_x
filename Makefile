@@ -16,7 +16,6 @@ put:
 	@rm $(DEVICE_PATH)/firmware/*.py -vf
 	@rm $(DEVICE_PATH)/*.py -vf
 	@rm $(DEVICE_PATH)/*.json -vf
-	@rm $(DEVICE_PATH)/*.toml -vf
 	@mkdir -p $(DEVICE_PATH)/firmware
 	@cp src/firmware/* $(DEVICE_PATH)/firmware/ -rv
 	@cp src/code.py $(DEVICE_PATH)/code.py -v
@@ -24,9 +23,11 @@ put:
 	@cp config.json $(DEVICE_PATH)/config.json -v
 
 lput: put
+	@rm $(DEVICE_PATH)/settings.toml -vf
 	@cp src/l_settings.toml $(DEVICE_PATH)/settings.toml -v
 
 rput: put
+	@rm $(DEVICE_PATH)/settings.toml -vf
 	@cp src/r_settings.toml $(DEVICE_PATH)/settings.toml -v
 
 check:

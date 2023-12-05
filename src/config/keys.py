@@ -473,6 +473,24 @@ MOUSE_KEYS = [
         description="Middle mouse button.",
         icon="mouse",
     ),
+    *[
+        Key(
+            name=f"MOUSE MOVE {d.upper()}",
+            value=f"MOUSE_MOVE_{d.upper()}",
+            description=f"Move cursor {d}.",
+            icon="mouse",
+        )
+        for d in ("up", "down", "left", "right")
+    ],
+    *[
+        Key(
+            name=f"MOUSE SCROLL {d.upper()}",
+            value=f"MOUSE_SCROLL_{d.upper()}",
+            description=f"Move scroll wheel {d}.",
+            icon="mouse",
+        )
+        for d in ("up", "down")
+    ],
 ]
 
 KEYS = KEYBOARD_KEYS + MEDIA_KEYS + MOUSE_KEYS

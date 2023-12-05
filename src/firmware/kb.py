@@ -59,7 +59,11 @@ class RokiX:
         self.last_bitmap = bytearray(len(self.rows))
 
         self.key_matrix = KeyMatrix(
-            row_pins=self.rows, column_pins=self.cols, columns_to_anodes=False
+            row_pins=self.rows,
+            column_pins=self.cols,
+            columns_to_anodes=False,
+            interval=0.01,
+            max_events=30,
         )
         self.matrix_buffer = [[False] * len(self.cols) for _ in self.rows]
 
