@@ -23,6 +23,12 @@ put:
 	@cp src/boot.py $(DEVICE_PATH)/boot.py -v
 	@cp config.json $(DEVICE_PATH)/config.json -v
 
+lput: put
+	@cp src/l_settings.toml $(DEVICE_PATH)/settings.toml -v
+
+rput: put
+	@cp src/r_settings.toml $(DEVICE_PATH)/settings.toml -v
+
 check:
 	@rshell -l
 

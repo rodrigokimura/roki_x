@@ -1,14 +1,16 @@
 import asyncio
+import os
 import time
 
 import board
 import busio
+import digitalio
 import neopixel
 import supervisor  # type: ignore
 from adafruit_bus_device.i2c_device import I2CDevice
 from i2ctarget import I2CTarget  # type: ignore
 from keypad import KeyMatrix
-from microcontroller import watchdog as w
+from microcontroller import watchdog as _watchdog
 from watchdog import WatchDogMode  # type: ignore
 
 from firmware.config import Config, Layer
@@ -24,9 +26,13 @@ I2C_SET = parse_color("#00ffff")
 
 class RokiX:
     def __init__(self, i2c_device_id: int) -> None:
-        if w is not None:
-            w.timeout = 5
-            w.mode = WatchDogMode.RESET
+        led = digitalio.DigitalInOut(board.GP25)  # type: ignore
+        led.direction = digitalio.Direction.OUTPUT
+
+        if _watchdog is not None:
+            self.watchdog = _watchdog
+            self.watchdog.timeout = 5
+            self.watchdog.mode = WatchDogMode.RESET
 
         self._pixels = neopixel.NeoPixel(board.GP23, 1)  # type: ignore
         self._pixels.brightness = 0.1
@@ -60,6 +66,7 @@ class RokiX:
         if self.primary:
             # TODO: check why this doesn't work on the secondary side
             self.config = Config.read()
+            led.value = bool(os.getenv("IS_LEFT_SIDE", True))
 
     @property
     def primary(self) -> bool:
@@ -117,7 +124,7 @@ class RokiX:
                         (key.press if pressed else key.release)()
                     self.last_bitmap[:] = self.curr_bitmap
                     self.change_layer(device)
-                    w.feed()
+                    self.watchdog.feed()
 
     async def run_as_secondary(self) -> None:
         with I2CTarget(  # type: ignore
@@ -140,7 +147,7 @@ class RokiX:
                                 pass
                             else:
                                 request.write(to_bytes(self.matrix_buffer))
-                        w.feed()
+                        self.watchdog.feed()
 
     def change_layer(self, device: I2CDevice):
         if self._prev_layer_index != self.config.layer_index:

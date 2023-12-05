@@ -375,7 +375,7 @@ function keySelector(button) {
     selectOnKeydown: false,
     delimiter: " ",
     values: getKeys(),
-    onLabelCreate(value, text) {
+    onLabelCreate() {
       this.find(".description").remove();
       return this;
     },

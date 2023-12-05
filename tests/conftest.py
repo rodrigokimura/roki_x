@@ -6,11 +6,13 @@ import pytest
 
 board = MagicMock()
 busio = MagicMock()
+digitalio = MagicMock()
 keypad = MagicMock()
 keypad.KeyMatrix = MagicMock()
 adafruit_hid = MagicMock()
 adafruit_hid_consumer_control = MagicMock()
 watchdog = MagicMock()
+microcontroller = MagicMock()
 
 
 class MockDevice:
@@ -67,6 +69,7 @@ usb_hid = MagicMock()
 
 sys.modules["board"] = board
 sys.modules["busio"] = busio
+sys.modules["digitalio"] = digitalio
 sys.modules["keypad"] = keypad
 sys.modules["adafruit_hid"] = adafruit_hid
 sys.modules["adafruit_hid.consumer_control"] = adafruit_hid_consumer_control
@@ -79,7 +82,7 @@ sys.modules["supervisor"] = supervisor
 sys.modules["i2ctarget"] = i2ctarget
 sys.modules["usb_hid"] = usb_hid
 sys.modules["watchdog"] = watchdog
-sys.modules["microcontroller"] = watchdog
+sys.modules["microcontroller"] = microcontroller
 
 
 @pytest.fixture

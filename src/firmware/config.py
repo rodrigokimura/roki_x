@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 
 from firmware.keys import KeyWrapper, init
 from firmware.utils import parse_color
@@ -14,17 +15,22 @@ class Layer:
 
     @classmethod
     def from_dict(cls, data: dict) -> Layer:
+        is_left_side = bool(os.getenv("IS_LEFT_SIDE", True))
         i = cls()
         i.name = data.get("name", "no name")
         c = data.get("color", "#000000")
         i.color = parse_color(c)
         i.primary_keys = tuple(
             tuple(reversed([KeyWrapper(k) for k in row]))
-            for row in data.get("primary_keys", (("",),))
+            for row in data.get(
+                "primary_keys" if is_left_side else "secondary_keys", (("",),)
+            )
         )
         i.secondary_keys = tuple(
             tuple(reversed([KeyWrapper(k) for k in row]))
-            for row in data.get("secondary_keys", (("",),))
+            for row in data.get(
+                "secondary_keys" if is_left_side else "primary_keys", (("",),)
+            )
         )
         return i
 

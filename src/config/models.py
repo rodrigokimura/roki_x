@@ -6,3 +6,6 @@ class Key(BaseModel):
     value: str
     description: str
     icon: str
+
+    def __hash__(self) -> int:
+        return self.name.__hash__()

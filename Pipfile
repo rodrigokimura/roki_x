@@ -13,6 +13,7 @@ adafruit-circuitpython-mcp230xx = "*"
 circup = "*"
 fastapi = "*"
 uvicorn = "*"
+httpx = "*"
 
 [dev-packages]
 black = "*"
