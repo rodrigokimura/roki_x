@@ -15,6 +15,13 @@ def test_app():
     assert isinstance(app, FastAPI)
 
 
+def test_index(client: TestClient):
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert response.headers.get("content-type") == "text/html; charset=utf-8"
+
+
 def test_keys(client: TestClient):
     response = client.get("/keys")
 
