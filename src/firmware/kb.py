@@ -20,8 +20,8 @@ ROW_PINS = (11, 15)
 COL_PINS = (16, 21)
 
 # colors
-INITIAL = parse_color("#ffff00")
-I2C_SET = parse_color("#00ffff")
+INITIAL = parse_color("#ff8800")
+I2C_SET = parse_color("#00ff00")
 
 
 class RokiX:
