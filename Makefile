@@ -1,5 +1,7 @@
-.PHONY: config
+.PHONY: config clean
+
 DEVICE_PATH := /run/media/$(USER)/CIRCUITPY
+# DEVICE_PATH := /run/media/$(USER)/ROKI_X
 
 install:
 	@circup install --auto --auto-file code.py
@@ -12,7 +14,7 @@ update:
 ls:
 	ls $(DEVICE_PATH)
 
-put:
+put: clean
 	@rm $(DEVICE_PATH)/firmware/*.py -vf
 	@rm $(DEVICE_PATH)/*.py -vf
 	@rm $(DEVICE_PATH)/*.json -vf
@@ -49,3 +51,6 @@ lint:
 config:
 	@uvicorn src.config.main:app --port 12000 --reload
 
+clean:
+	@echo "Removing cache files..."
+	@find ./ -name '*.pyc' -exec rm -f {} \;

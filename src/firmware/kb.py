@@ -70,6 +70,7 @@ class RokiX:
         if self.primary:
             # TODO: check why this doesn't work on the secondary side
             self.config = Config.read()
+            supervisor.runtime.autoreload = self.config.autoreload
             led.value = bool(os.getenv("IS_LEFT_SIDE", True))
 
     @property
