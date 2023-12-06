@@ -37,10 +37,15 @@ class Layer:
 
 class Config:
     layers: tuple[Layer]
+    autoreload: bool
 
-    def __init__(self) -> None:
+    def __init__(
+        self, layers: list[dict] | None = None, autoreload: bool = False
+    ) -> None:
+        init(self)
         self.layer_index = 0
-        self.layers = tuple()
+        self.layers = tuple(Layer.from_dict(layer) for layer in layers or tuple())
+        self.autoreload = autoreload
 
     @property
     def layer(self):
@@ -49,8 +54,8 @@ class Config:
     @classmethod
     def read(cls):
         with open("config.json") as file:
-            config = json.load(file)
-        i = cls()
-        init(i)
-        i.layers = tuple(Layer.from_dict(layer) for layer in config.get("layers", {}))
-        return i
+            config: dict = json.load(file)
+        return cls(
+            layers=config.get("layers", []),
+            autoreload=config.get("autoreload", False),
+        )
