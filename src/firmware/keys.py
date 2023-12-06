@@ -137,7 +137,7 @@ class KeyWrapper:
 
     def _press(self, sender: Device, key_code: Any) -> None:
         if isinstance(sender, Media):
-            sender.send(key_code)
+            sender.press(key_code)
         elif isinstance(sender, Keyboard):
             sender.press(key_code)
         elif isinstance(sender, Mouse):
@@ -147,7 +147,7 @@ class KeyWrapper:
 
     def _release(self, sender: Device, key_code: Any) -> None:
         if isinstance(sender, Media):
-            pass
+            sender.release()
         elif isinstance(sender, Keyboard):
             sender.release(key_code)
         elif isinstance(sender, Mouse):

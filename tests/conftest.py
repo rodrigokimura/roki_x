@@ -21,7 +21,10 @@ class MockDevice:
 
 
 class MockMedia(MockDevice):
-    def send(self, _):
+    def press(self, _):
+        ...
+
+    def release(self):
         ...
 
 
