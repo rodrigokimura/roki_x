@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 import usb_hid
 from adafruit_hid.consumer_control import ConsumerControl as Media
 from adafruit_hid.consumer_control_code import ConsumerControlCode as MediaKey
@@ -11,9 +10,8 @@ from adafruit_hid.mouse import Mouse as _Mouse
 from firmware.manager import Commands, Manager
 from firmware.utils import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from typing import Sequence
-    from typing import Literal
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Literal, Sequence
 
     DPad = (
         Literal["u"]
@@ -78,10 +76,12 @@ class MouseButton:
     }
 
     def get(self, n: str) -> int | DPad:
-        return getattr(Mouse, n, self.movement[n])
+        if hasattr(Mouse, n):
+            return getattr(Mouse, n)
+        return self.movement[n]
 
     def __contains__(self, n: str) -> bool:
-        return hasattr(Mouse, n) or n in self.movement
+        return hasattr(Mouse, n) or (n in self.movement)
 
 
 class MediaFunction:
