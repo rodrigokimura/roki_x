@@ -54,4 +54,4 @@ config:
 clean:
 	@echo "Removing cache files..."
 	@find ./ -name '*.pyc' -exec rm -f {} \;
-	@find ./ -name '*__pycache__' -exec rm -f {} \;
+	@find ./ -name '__pycache__' -exec rm -rf {} \;
