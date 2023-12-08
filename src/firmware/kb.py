@@ -107,7 +107,11 @@ class RokiX:
         return self.config.layer
 
     async def run_as_primary(self) -> None:
-        with busio.I2C(scl=self.i2c_scl_pin, sda=self.i2c_sda_pin) as i2c:  # type: ignore
+        with busio.I2C(
+            scl=self.i2c_scl_pin,
+            sda=self.i2c_sda_pin,
+            frequency=786_000,
+        ) as i2c:  # type: ignore
             with I2CDevice(i2c, self.i2c_device_id, False) as device:  # type: ignore
                 self.neopixel = I2C_SET
                 await asyncio.sleep(1)
@@ -159,4 +163,4 @@ class RokiX:
             self._prev_layer_index = self.config.layer_index
             if self.primary:
                 self.neopixel = self.layer.color
-                device.write(b"\x00\x00" + bytes(self.layer.color))
+                device.write(bytes(self.layer.color))
