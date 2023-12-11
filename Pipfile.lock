@@ -77,10 +77,10 @@
         },
         "adafruit-circuitpython-typing": {
             "hashes": [
-                "sha256:02625de1f8fdeb42db5a88999d2dc7a905339b30c673f7a2d8608b840e8520cc",
-                "sha256:6a2a7a4f60d54348f3c4aad8f4dd0d0f0aaf9c854ddd1761b20d5146440faa1d"
+                "sha256:96de554cfc9d269db72aa4d3b902923815f2d3f488fce3533c6ea07b388ba557",
+                "sha256:dc69ed6362dcb890f7103d4da0db94b7d1849bc66804598d34508f413724d152"
             ],
-            "version": "==1.9.5"
+            "version": "==1.9.6"
         },
         "adafruit-platformdetect": {
             "hashes": [
