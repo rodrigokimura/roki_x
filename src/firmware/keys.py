@@ -135,6 +135,9 @@ class KeyWrapper:
             if key in key_container
         )
 
+    def has_management_key(self):
+        return any(isinstance(s, Manager) for s, _ in self.params)
+
     def _press(self, sender: Device, key_code: Any) -> None:
         if isinstance(sender, Media):
             sender.press(key_code)

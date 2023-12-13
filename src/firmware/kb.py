@@ -14,6 +14,7 @@ from microcontroller import watchdog as _watchdog
 from watchdog import WatchDogMode  # type: ignore
 
 from firmware.config import Config, Layer
+from firmware.keys import KeyWrapper
 from firmware.utils import diff_bitmaps, get_coords, parse_color, to_bytes
 
 ROW_PINS = (11, 15)
@@ -44,6 +45,7 @@ class RokiX:
         self.neopixel = INITIAL
         self._primary: bool | None = None
         self._prev_layer_index: int = 0
+        self._pressed_keys: set[KeyWrapper] = set()
 
         row_start, row_end = ROW_PINS
         col_start, col_end = COL_PINS
@@ -121,7 +123,7 @@ class RokiX:
                         row, col = get_coords(event.key_number, len(self.cols))
                         key = self.layer.primary_keys[row][col]
                         print(key.key_names)
-                        (key.press if event.pressed else key.release)()
+                        self.press_or_release(key, event.pressed)
 
                     device.readinto(self.curr_bitmap, end=len(self.rows))
 
@@ -130,7 +132,7 @@ class RokiX:
                     ):
                         key = self.layer.secondary_keys[row][col]
                         print(key.key_names)
-                        (key.press if pressed else key.release)()
+                        self.press_or_release(key, pressed)
                     self.last_bitmap[:] = self.curr_bitmap
                     self.change_layer(device)
                     self.watchdog.feed()
@@ -164,3 +166,16 @@ class RokiX:
             if self.primary:
                 self.neopixel = self.layer.color
                 device.write(bytes(self.layer.color))
+
+    def press_or_release(self, key: KeyWrapper, pressed: bool):
+        if pressed:
+            key.press()
+            self._pressed_keys.add(key)
+        else:
+            if key.has_management_key():
+                for k in self._pressed_keys:
+                    k.release()
+                self._pressed_keys.clear()
+            else:
+                key.release()
+                self._pressed_keys.remove(key)
