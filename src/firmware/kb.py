@@ -45,7 +45,6 @@ class RokiX:
         self.neopixel = INITIAL
         self._primary: bool | None = None
         self._prev_layer_index: int = 0
-        self._pressed_keys: set[KeyWrapper] = set()
 
         row_start, row_end = ROW_PINS
         col_start, col_end = COL_PINS
@@ -170,12 +169,8 @@ class RokiX:
     def press_or_release(self, key: KeyWrapper, pressed: bool):
         if pressed:
             key.press()
-            self._pressed_keys.add(key)
         else:
-            if key.has_management_key():
-                for k in self._pressed_keys:
-                    k.release()
-                self._pressed_keys.clear()
+            if key.management_key:
+                key.release_all()
             else:
                 key.release()
-                self._pressed_keys.remove(key)

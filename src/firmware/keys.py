@@ -102,14 +102,25 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 sender_map: dict[Device, Code] = {}
+kb: Keyboard | None = None
+mouse: Mouse | None = None
+media: Media | None = None
 
 
 def init(c: Config):
     global sender_map
+    global kb
+    global mouse
+    global media
+
+    kb = Keyboard(usb_hid.devices)
+    mouse = Mouse(usb_hid.devices)
+    media = Media(usb_hid.devices)
+
     sender_map = {
-        Keyboard(usb_hid.devices): KeyboardCode(),
-        Mouse(usb_hid.devices): MouseButton(),
-        Media(usb_hid.devices): MediaFunction(),
+        kb: KeyboardCode(),
+        mouse: MouseButton(),
+        media: MediaFunction(),
         Manager(c): Commands(),
     }
 
@@ -134,9 +145,7 @@ class KeyWrapper:
             for key in keys
             if key in key_container
         )
-
-    def has_management_key(self):
-        return any(isinstance(s, Manager) for s, _ in self.params)
+        self.management_key = any(isinstance(s, Manager) for s, _ in self.params)
 
     def _press(self, sender: Device, key_code: Any) -> None:
         if isinstance(sender, Media):
@@ -165,6 +174,12 @@ class KeyWrapper:
     def release(self) -> None:
         for sender, key_code in self.params:
             self._release(sender, key_code)
+
+    def release_all(self):
+        self.release()
+        kb.release_all()
+        mouse.release_all()
+        media.release()
 
     def press_and_release(self) -> None:
         self.press()
