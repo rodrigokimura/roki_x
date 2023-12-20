@@ -38,9 +38,9 @@ class Mouse(_Mouse):
     def press(self, buttons: int | DPad) -> None:
         if isinstance(buttons, str):
             if buttons == "u":
-                self.move(y=self.mouse_movement)
-            elif buttons == "d":
                 self.move(y=-self.mouse_movement)
+            elif buttons == "d":
+                self.move(y=self.mouse_movement)
             elif buttons == "l":
                 self.move(x=-self.mouse_movement)
             elif buttons == "r":
