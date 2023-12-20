@@ -19,6 +19,14 @@ from firmware.utils import diff_bitmaps, get_coords, parse_color, to_bytes
 
 ROW_PINS = (11, 15)
 COL_PINS = (16, 21)
+COLUMNS_TO_ANODES = False
+INTERVAL = 0.01
+MAX_EVENTS = 30
+
+I2C_FREQUENCY = 786_000
+
+WATCHDOG_TIMEOUT = 5
+NEOPIXEL_BRIGHTNESS = 0.1
 
 # colors
 INITIAL = parse_color("#ff8800")
@@ -32,11 +40,11 @@ class RokiX:
 
         if _watchdog is not None:
             self.watchdog = _watchdog
-            self.watchdog.timeout = 5
+            self.watchdog.timeout = WATCHDOG_TIMEOUT
             self.watchdog.mode = WatchDogMode.RESET
 
         self._pixels = neopixel.NeoPixel(board.GP23, 1)  # type: ignore
-        self._pixels.brightness = 0.1
+        self._pixels.brightness = NEOPIXEL_BRIGHTNESS
         self.i2c_device_id = i2c_device_id
 
         self.i2c_scl_pin = board.GP1  # type: ignore
@@ -62,14 +70,13 @@ class RokiX:
         self.key_matrix = KeyMatrix(
             row_pins=self.rows,
             column_pins=self.cols,
-            columns_to_anodes=False,
-            interval=0.01,
-            max_events=30,
+            columns_to_anodes=COLUMNS_TO_ANODES,
+            interval=INTERVAL,
+            max_events=MAX_EVENTS,
         )
         self.matrix_buffer = [[False] * len(self.cols) for _ in self.rows]
 
         if self.primary:
-            # TODO: check why this doesn't work on the secondary side
             self.config = Config.read()
             supervisor.runtime.autoreload = self.config.autoreload
             led.value = bool(os.getenv("IS_LEFT_SIDE", True))
@@ -111,7 +118,7 @@ class RokiX:
         with busio.I2C(
             scl=self.i2c_scl_pin,
             sda=self.i2c_sda_pin,
-            frequency=786_000,
+            frequency=I2C_FREQUENCY,
         ) as i2c:  # type: ignore
             with I2CDevice(i2c, self.i2c_device_id, False) as device:  # type: ignore
                 self.neopixel = I2C_SET
