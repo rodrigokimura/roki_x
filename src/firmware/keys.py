@@ -102,9 +102,9 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 sender_map: dict[Device, Code] = {}
-kb: Keyboard | None = None
-mouse: Mouse | None = None
-media: Media | None = None
+kb: Keyboard
+mouse: Mouse
+media: Media
 
 
 def init(c: Config):
