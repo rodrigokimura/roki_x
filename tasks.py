@@ -11,6 +11,7 @@ def get_device_path(c: Context):
                 return next(v for v in volumes if v.endswith(name))
         except (FileNotFoundError, StopIteration):
             continue
+    print("No device found.")
 
 
 def get_serial_device(c: Context):
