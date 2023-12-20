@@ -493,4 +493,14 @@ MOUSE_KEYS = [
     ],
 ]
 
-KEYS = KEYBOARD_KEYS + MEDIA_KEYS + MOUSE_KEYS
+LAYER_KEYS = [
+    Key(
+        name=f"LAYER {d.upper()}",
+        value=f"LAYER_{d.upper()[:3]}",
+        description=f"{d.title()} layer.",
+        icon="layer group",
+    )
+    for d in ("increment", "decrement")
+]
+
+KEYS = KEYBOARD_KEYS + MEDIA_KEYS + MOUSE_KEYS + LAYER_KEYS

@@ -12,9 +12,18 @@ class Manager:
         self.config = config
 
     def on_press(self, command: Command) -> None:
-        if command.index != self.config.layer_index:
-            self._prev = self.config.layer_index
-            self.config.layer_index = command.index
+        if command.press_or_hold:
+            if command.index != self.config.layer_index:
+                self._prev = self.config.layer_index
+                self.config.layer_index = command.index
+        else:
+            if command.type_ == "inc":
+                index = self.config.layer_index + 1
+                max_layer = len(self.config.layers) - 1
+                self.config.layer_index = min(index, max_layer)
+            elif command.type_ == "dec":
+                index = self.config.layer_index - 1
+                self.config.layer_index = max(index, 0)
 
     def on_release(self, command: Command) -> None:
         if command.type_ == "hold":
@@ -24,7 +33,14 @@ class Manager:
 class Commands:
     def get(self, __name: str) -> Command:
         if __name.lower().startswith("layer_"):
-            _, index, type_ = __name.split("_")
+            segments = __name.split("_")
+            if len(segments) == 3:
+                _, index, type_ = segments
+            elif len(segments) == 2:
+                _, type_ = segments
+                index = 0
+            else:
+                raise NotImplementedError()
             return Command(int(index), type_)
         return Command()
 
@@ -37,7 +53,11 @@ class Command:
         self.index = index
         if not type_:
             self.type_ = None
-        elif type_.lower() not in ("press", "hold"):
+        elif type_.lower() not in ("press", "hold", "inc", "dec"):
             self.type_ = None
         else:
             self.type_ = type_.lower()
+
+    @property
+    def press_or_hold(self):
+        return self.type_ in ("press", "hold")

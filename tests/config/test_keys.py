@@ -1,4 +1,4 @@
-from config.keys import KEYBOARD_KEYS, KEYS, MEDIA_KEYS, MOUSE_KEYS
+from config.keys import KEYBOARD_KEYS, KEYS, LAYER_KEYS, MEDIA_KEYS, MOUSE_KEYS
 
 
 def test_keys():
@@ -9,5 +9,12 @@ def test_keys():
         + 4  # for cursor direction ["up", "down", "left", "right"]
         + 2  # for scroll wheel ["up", "down"]
     )
-    assert len(KEYS) == sum([len(KEYBOARD_KEYS), len(MEDIA_KEYS), len(MOUSE_KEYS)])
+    assert len(KEYS) == sum(
+        [
+            len(KEYBOARD_KEYS),
+            len(MEDIA_KEYS),
+            len(MOUSE_KEYS),
+            len(LAYER_KEYS),
+        ]
+    )
     assert len(set(KEYS)) == len(KEYS)
