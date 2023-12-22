@@ -174,10 +174,4 @@ class RokiX:
                 device.write(bytes(self.layer.color))
 
     def press_or_release(self, key: KeyWrapper, pressed: bool):
-        if pressed:
-            key.press()
-        else:
-            if key.management_key:
-                key.release_all()
-            else:
-                key.release()
+        key.press() if pressed else key.release()

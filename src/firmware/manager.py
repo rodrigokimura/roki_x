@@ -35,7 +35,8 @@ class Commands:
         if __name.lower().startswith("layer_"):
             segments = __name.split("_")
             if len(segments) == 3:
-                _, index, type_ = segments
+                index = int(segments[1])
+                type_ = segments[2]
             elif len(segments) == 2:
                 _, type_ = segments
                 index = 0

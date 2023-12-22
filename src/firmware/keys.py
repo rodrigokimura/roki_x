@@ -11,7 +11,7 @@ from firmware.manager import Commands, Manager
 from firmware.utils import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Literal, Sequence
+    from typing import Literal, Sequence, TypeAlias
 
     DPad = (
         Literal["u"]
@@ -97,8 +97,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from .config import Config
 
-    Device = Keyboard | Mouse | Media | Manager
-    Code = KeyboardCode | MouseButton | MediaFunction | Commands
+    Device: TypeAlias = Keyboard | Mouse | Media | Manager
+    Code: TypeAlias = KeyboardCode | MouseButton | MediaFunction | Commands
 
 
 sender_map: dict[Device, Code] = {}
@@ -127,12 +127,8 @@ def init(c: Config):
 
 class KeyWrapper:
     def __init__(self, keys: str | list[str] | None = None) -> None:
-        if keys is None:
-            self.key_names = "noop"
-            self.params = tuple()
-            return
-
         global sender_map
+        keys = keys or "noop"
         if isinstance(keys, str):
             keys = [keys.upper()]
         else:
@@ -174,9 +170,10 @@ class KeyWrapper:
     def release(self) -> None:
         for sender, key_code in self.params:
             self._release(sender, key_code)
+        if self.management_key:
+            self.release_all()
 
-    def release_all(self):
-        self.release()
+    def release_all(self) -> None:
         kb.release_all()
         mouse.release_all()
         media.release()

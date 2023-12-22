@@ -6,7 +6,9 @@ except ImportError:  # pragma: no cover
     TYPE_CHECKING = False
 
 
-def parse_color(color: str | list[int] | tuple[int, int, int]) -> tuple[int, int, int]:
+def parse_color(
+    color: str | list[int | str] | tuple[int | str, int | str, int | str]
+) -> tuple[int, int, int]:
     if isinstance(color, str):
         if color[0] == "#":
             color = color[1:]
@@ -18,10 +20,7 @@ def parse_color(color: str | list[int] | tuple[int, int, int]) -> tuple[int, int
         return int(r, 16), int(g, 16), int(b, 16)
 
     if isinstance(color, (list, tuple)):
-        r = color[0]
-        g = color[1]
-        b = color[2]
-        return int(r), int(g), int(b)
+        return int(color[0]), int(color[1]), int(color[2])
 
     raise NotImplementedError
 

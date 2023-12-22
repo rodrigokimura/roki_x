@@ -12,7 +12,7 @@ from firmware.manager import Manager
 
 @pytest.fixture
 def mock_config():
-    return Config()
+    return Config([{}, {}])
 
 
 def test_sender_map_not_initialised():
@@ -97,6 +97,24 @@ def test_key_wrapper_layer_press(mock_config: Config):
 
     KeyWrapper("layer_2_press").release()
     assert mock_config.layer_index == 2
+
+
+def test_key_wrapper_layer_inc_dec(mock_config: Config):
+    mock_config.layers
+    current_layer = mock_config.layer_index
+
+    KeyWrapper("layer_inc").press()
+    assert current_layer != mock_config.layer_index
+    assert mock_config.layer_index == 1
+
+    KeyWrapper("layer_inc").release()
+    assert mock_config.layer_index == 1
+
+    KeyWrapper("layer_dec").press()
+    assert mock_config.layer_index == 0
+
+    KeyWrapper("layer_dec").release()
+    assert mock_config.layer_index == 0
 
 
 @pytest.mark.usefixtures("mock_config")

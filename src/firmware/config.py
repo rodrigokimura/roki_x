@@ -36,7 +36,7 @@ class Layer:
 
 
 class Config:
-    layers: tuple[Layer]
+    layers: tuple[Layer, ...]
     autoreload: bool
 
     def __init__(

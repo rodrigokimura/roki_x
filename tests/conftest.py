@@ -35,6 +35,9 @@ class MockKeyboard(MockDevice):
     def release(self, _):
         ...
 
+    def release_all(self):
+        ...
+
 
 class MockMouse:
     LEFT_BUTTON = 1
@@ -46,6 +49,9 @@ class MockMouse:
         ...
 
     def release(self, _):
+        ...
+
+    def release_all(self):
         ...
 
     def move(self, **_):
